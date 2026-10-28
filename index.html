@@ -574,12 +574,14 @@
       const rawFiles = Array.from(e.target.files);
       if (!rawFiles || rawFiles.length === 0) return;
 
+      // 1. Restrict maximum batch upload to 4 files
       if (rawFiles.length > 4) {
         showToast("⚠️ 上傳限制：一次最多只能上傳 4 個 FITS 檔案！", "error");
         fitsInput.value = "";
         return;
       }
 
+      // 2. Extract UTC timestamps and sort chronologically
       const parsedItems = [];
       for (const f of rawFiles) {
         const item = extractFileDate(f);
@@ -593,12 +595,61 @@
       parsedItems.sort((a, b) => a.date - b.date);
       const files = parsedItems.map(item => item.file);
 
+      // Store base observation date (UTC)
       if (parsedItems[0] && parsedItems[0].date.getTime() > 0) {
         baseObservationDate = parsedItems[0].date;
       } else {
         baseObservationDate = new Date(Date.UTC(2026, 0, 1, 0, 0, 0));
       }
+      
+      // 3. Time Continuity Validation across consecutive files
+      if (parsedItems.length > 1) {
+        let isNonConsecutive = false;
+        let gapInfo = "";
 
+        for (let i = 0; i < parsedItems.length - 1; i++) {
+          const item1 = parsedItems[i];
+          const item2 = parsedItems[i + 1];
+
+          if (item1.date.getTime() > 0 && item2.date.getTime() > 0) {
+            const diffMinutes = Math.abs(item2.date - item1.date) / (1000 * 60);
+
+            // Standard e-CALLISTO single file duration is 15 mins.
+            // If the interval is not within 14 ~ 16 minutes, flag as non-consecutive.
+            if (diffMinutes < 14 || diffMinutes > 16) {
+              isNonConsecutive = true;
+              gapInfo = `檔案「${item1.name}」與「${item2.name}」觀測時間間隔 ${Math.round(diffMinutes)} 分鐘（標準連續區間應為15分鐘）！`;
+              break;
+            }
+          }
+        }
+
+        if (isNonConsecutive) {
+          showToast(`⚠️ 警告：上傳之FIT為非連續時間資料！${gapInfo}`, "error");
+
+          // Draw warning text on spectrumCanvas
+          specCtx.fillStyle = "#0f172a";
+          specCtx.fillRect(0, 0, 720, 720);
+
+          specCtx.fillStyle = "#f43f5e";
+          specCtx.font = "bold 22px Inter, sans-serif";
+          specCtx.textAlign = "center";
+          specCtx.fillText("Please Upload Certain fit(s) File Again.", 375, 350);
+
+          specCtx.fillStyle = "#94a3b8";
+          specCtx.font = "14px Inter, sans-serif";
+          specCtx.fillText("Detected non-consecutive observation time gaps.", 375, 380);
+
+          placeholderOverlay.classList.add('hidden');
+
+          // Reset loaded raw state and stop further execution/rendering
+          currentRawFitsData = null;
+          fitsInput.value = "";
+          return;
+        }
+      }
+      
+      // Set file label UI
       if (files.length === 1) {
         currentFileName = files[0].name.replace(/\.[^/.]+$/, "");
         fileNameSpan.innerText = files[0].name;
