@@ -24,7 +24,7 @@ const classColors = {
   "3": { stroke: "#f59e0b", fill: "rgba(245, 158, 11, 0.2)", label: "Type III" },
   "4": { stroke: "#a855f7", fill: "rgba(168, 85, 247, 0.2)", label: "Type IV" },
   "5": { stroke: "#06b6d4", fill: "rgba(6, 182, 212, 0.2)", label: "Type V" },
-  "6": { stroke: "#10b981", fill: "rgba(16, 185, 129, 0.2)", label: "Other" }
+  "6": { stroke: "#6366f1", fill: "rgba(99, 102, 241, 0.2)", label: "Other" }
 };
 
 function getClassStyle(classId) {
