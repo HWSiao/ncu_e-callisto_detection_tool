@@ -66,19 +66,21 @@
   <div class="flex-1 flex overflow-hidden">
 
     <!-- Left Sidebar: Controls -->
-    <aside class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col p-3 gap-2.5 shrink-0 overflow-y-auto scrollbar-thin">
+    <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col p-3 gap-2.5 shrink-0 overflow-y-auto scrollbar-thin">
       
       <!-- FITS File Loader -->
       <div class="bg-slate-800/60 border border-slate-700/60 rounded-lg p-2.5">
-        <h2 class="text-xs font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-file-import text-amber-400"></i> Load FITS File(s)
+        <h2 class="text-xs font-semibold text-slate-200 mb-1.5 flex items-center justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-file-import text-amber-400"></i> Load FITS File(s)</span>
+          <span id="fileCountBadge" class="text-[9px] bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded font-mono hidden">0 files</span>
         </h2>
-        <label class="flex flex-col items-center justify-center w-full h-16 border border-dashed border-slate-600 hover:border-amber-500 bg-slate-900/50 hover:bg-slate-900 rounded cursor-pointer transition p-1">
-          <i class="fa-solid fa-cloud-arrow-up text-lg text-slate-400"></i>
+        <label class="flex flex-col items-center justify-center w-full h-14 border border-dashed border-slate-600 hover:border-amber-500 bg-slate-900/50 hover:bg-slate-900 rounded cursor-pointer transition p-1 mb-2">
+          <i class="fa-solid fa-cloud-arrow-up text-base text-slate-400"></i>
           <span class="text-[11px] text-slate-300 font-medium">Select/Drag FITS</span>
           <span class="text-[9px] text-amber-400">Max 4 files per batch</span>
-          <input type="file" id="fitsInput" accept=".fit" multiple class="hidden" />
+          <input type="file" id="fitsInput" accept=".fit,.fits,.FIT,.FITS" multiple class="hidden" />
         </label>
+        
         <!-- Full File Names List Container -->
         <div id="fileInfo" class="text-[10px] text-slate-400 hidden flex flex-col gap-1">
           <span class="text-slate-400 font-medium flex items-center gap-1">
@@ -275,7 +277,7 @@
     const fitsInput = document.getElementById('fitsInput');
     const fileInfo = document.getElementById('fileInfo');
     const fileNamesList = document.getElementById('fileNamesList');
-    const fileNameSpan = document.getElementById('fileName');
+    const fileCountBadge = document.getElementById('fileCountBadge');
     const currentTileLabel = document.getElementById('currentTileLabel');
     const boxCount = document.getElementById('boxCount');
     const boxCountBadge = document.getElementById('boxCountBadge');
@@ -608,7 +610,7 @@
       } else {
         baseObservationDate = new Date(Date.UTC(2026, 0, 1, 0, 0, 0));
       }
-
+      
       // Render FULL Un-truncated File Names List in UI
       fileNamesList.innerHTML = "";
       parsedItems.forEach((item, i) => {
@@ -620,7 +622,11 @@
         `;
         fileNamesList.appendChild(badge);
       });
-      
+
+      fileCountBadge.innerText = `${files.length} file${files.length > 1 ? 's' : ''}`;
+      fileCountBadge.classList.remove('hidden');
+      fileInfo.classList.remove('hidden');
+
       // 3. Time Continuity Validation across consecutive files
       if (parsedItems.length > 1) {
         let isNonConsecutive = false;
@@ -667,16 +673,13 @@
           return;
         }
       }
-      
+
       // Set file label UI
       if (files.length === 1) {
         currentFileName = files[0].name.replace(/\.[^/.]+$/, "");
-        fileNameSpan.innerText = files[0].name;
       } else {
         currentFileName = `${files[0].name.replace(/\.[^/.]+$/, "")}_to_${files[files.length - 1].name.replace(/\.[^/.]+$/, "")}`;
-        fileNameSpan.innerText = `${files.length} files merged (${files[0].name.substring(0, 15)}...)`;
       }
-      fileInfo.classList.remove('hidden');
 
       try {
         const alignedList = [];
