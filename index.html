@@ -295,6 +295,45 @@
   </div>
 
   <!-- JavaScript Implementation -->
+  <script>
+	// --- DOM Elements ---
+	const fitsInput = document.getElementById('fitsInput');
+	const fileInfo = document.getElementById('fileInfo');
+	const fileNamesList = document.getElementById('fileNamesList');
+	const fileCountBadge = document.getElementById('fileCountBadge');
+	const currentTileLabel = document.getElementById('currentTileLabel');
+	const boxCount = document.getElementById('boxCount');
+	const boxCountBadge = document.getElementById('boxCountBadge');
+	const exportCount = document.getElementById('exportCount');
+	const windowRangeLabel = document.getElementById('windowRangeLabel');
+	const timeSlider = document.getElementById('timeSlider');
+	const timeSliderVal = document.getElementById('timeSliderVal');
+	const prevTileBtn = document.getElementById('prevTileBtn');
+	const nextTileBtn = document.getElementById('nextTileBtn');
+	const clearBoxesBtn = document.getElementById('clearBoxesBtn');
+	const exportYoloBtn = document.getElementById('exportYoloBtn');
+	const placeholderOverlay = document.getElementById('placeholderOverlay');
+	const enableRfi = document.getElementById('enableRfi');
+	const sliderContrast = document.getElementById('sliderContrast');
+	const valContrast = document.getElementById('valContrast');
+	const sliderHorizontal = document.getElementById('sliderHorizontal');
+	const valHorizontal = document.getElementById('valHorizontal');
+	const colormapSelect = document.getElementById('colormapSelect');
+	const reprocessBtn = document.getElementById('reprocessBtn');
+	const resetRfiBtn = document.getElementById('resetRfiBtn');
+	const bboxList = document.getElementById('bboxList');
+	const yoloPreview = document.getElementById('yoloPreview');
+
+	const specCanvas = document.getElementById('spectrumCanvas');
+	const specCtx = specCanvas.getContext('2d');
+	const interactCanvas = document.getElementById('interactionCanvas');
+	const interactCtx = interactCanvas.getContext('2d');
+
+	// Layout Containers for Mobile RWD
+	const sidebarLeft = document.getElementById('sidebarLeft');
+	const sidebarRight = document.getElementById('sidebarRight');
+	const mainCanvasArea = document.getElementById('mainCanvasArea');
+	</script>
 
 </body>
 </html>
