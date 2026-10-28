@@ -77,10 +77,16 @@
           <i class="fa-solid fa-cloud-arrow-up text-lg text-slate-400"></i>
           <span class="text-[11px] text-slate-300 font-medium">Select/Drag FITS</span>
           <span class="text-[9px] text-amber-400">Max 4 files per batch</span>
-          <input type="file" id="fitsInput" accept=".fit,.fits,.FIT,.FITS" multiple class="hidden" />
+          <input type="file" id="fitsInput" accept=".fit" multiple class="hidden" />
         </label>
-        <div id="fileInfo" class="mt-1 text-[10px] text-slate-400 truncate hidden">
-          <span class="text-slate-500">Loaded:</span> <span id="fileName" class="text-slate-200 font-mono"></span>
+        <!-- Full File Names List Container -->
+        <div id="fileInfo" class="text-[10px] text-slate-400 hidden flex flex-col gap-1">
+          <span class="text-slate-400 font-medium flex items-center gap-1">
+            <i class="fa-solid fa-folder-open text-amber-400/80"></i> Loaded Files:
+          </span>
+          <div id="fileNamesList" class="max-h-28 overflow-y-auto scrollbar-thin flex flex-col gap-1 pr-1 bg-slate-950/70 p-1.5 rounded border border-slate-800">
+            <!-- Full file names injected here dynamically -->
+          </div>
         </div>
       </div>
 
@@ -268,6 +274,7 @@
     // --- DOM Elements ---
     const fitsInput = document.getElementById('fitsInput');
     const fileInfo = document.getElementById('fileInfo');
+    const fileNamesList = document.getElementById('fileNamesList');
     const fileNameSpan = document.getElementById('fileName');
     const currentTileLabel = document.getElementById('currentTileLabel');
     const boxCount = document.getElementById('boxCount');
@@ -601,6 +608,18 @@
       } else {
         baseObservationDate = new Date(Date.UTC(2026, 0, 1, 0, 0, 0));
       }
+
+      // Render FULL Un-truncated File Names List in UI
+      fileNamesList.innerHTML = "";
+      parsedItems.forEach((item, i) => {
+        const badge = document.createElement('div');
+        badge.className = "flex items-start gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded text-[10px] text-slate-200 leading-tight break-all font-mono";
+        badge.innerHTML = `
+          <span class="text-amber-400 font-bold shrink-0">${i + 1}.</span>
+          <span class="select-all">${item.name}</span>
+        `;
+        fileNamesList.appendChild(badge);
+      });
       
       // 3. Time Continuity Validation across consecutive files
       if (parsedItems.length > 1) {
